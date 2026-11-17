@@ -12,7 +12,7 @@ load_dotenv()
 # --- CONFIGURATION ---
 # Set to True for your initial local run today.
 # Set to False before pushing to GitHub Actions for daily runs.
-INITIAL_FULL_SCRAPE = True
+INITIAL_FULL_SCRAPE = False
 
 TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID", "@hamrobz_shutter")

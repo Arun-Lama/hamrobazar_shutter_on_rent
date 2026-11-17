@@ -1,0 +1,39 @@
+name: Daily Hamro Bazaar Shutter Alert
+
+on:
+  schedule:
+    # 8:00 PM NPT is 14:15 UTC
+    - cron: '15 14 * * *'
+  workflow_dispatch: # Allows manual triggering from the GitHub Actions tab
+
+permissions:
+  contents: write # Required so the workflow can commit updated seen_listings.json
+
+jobs:
+  scrape-and-notify:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install requests python-dotenv
+
+      - name: Run scraper
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: "@hamrobz_shutter"
+        run: python scraper.py
+
+      - name: Commit updated seen_listings.json
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add seen_listings.json
+          git diff --quiet && git diff --staged --quiet || (git commit -m "Update seen_listings.json" && git push)
